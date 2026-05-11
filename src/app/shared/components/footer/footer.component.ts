@@ -61,7 +61,7 @@ import { RouterModule } from '@angular/router';
 
       <div class="footer-bottom">
         <div class="footer-bottom-content">
-          <p>&copy; 2024 ServiceHub. All rights reserved.</p>
+          <p>&copy; 2026 ServiceHub. All rights reserved.</p>
           <div class="footer-links">
             <a routerLink="/privacy">Privacy Policy</a>
             <span class="divider">•</span>
