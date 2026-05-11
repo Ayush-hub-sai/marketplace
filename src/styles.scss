@@ -1,10 +1,11 @@
 /* Global Styles */
+@use 'assets/themes/variables' as *;
+@use 'assets/themes/themes' as *;
+
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined');
 
 // Import theme system
-@import 'assets/themes/_variables.scss';
-@import 'assets/themes/_themes.scss';
 
 // Angular Material Theme (light theme as default)
 @import '@angular/material/prebuilt-themes/indigo-pink.css';

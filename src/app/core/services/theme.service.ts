@@ -1,4 +1,13 @@
-import { Injectable, signal } from '@angular/core';
+import {
+  Injectable,
+  Inject,
+  PLATFORM_ID,
+  signal
+} from '@angular/core';
+
+import {
+  isPlatformBrowser
+} from '@angular/common';
 
 export type ThemeName = 'light' | 'dark' | 'blue' | 'red';
 
@@ -6,7 +15,10 @@ export type ThemeName = 'light' | 'dark' | 'blue' | 'red';
   providedIn: 'root'
 })
 export class ThemeService {
+
   currentTheme = signal<ThemeName>('light');
+
+  private isBrowser: boolean;
 
   private readonly themes: Record<ThemeName, any> = {
     light: {
@@ -17,6 +29,7 @@ export class ThemeService {
       background: '#fafafa',
       surface: '#ffffff'
     },
+
     dark: {
       name: 'dark',
       primary: '#64b5f6',
@@ -25,6 +38,7 @@ export class ThemeService {
       background: '#121212',
       surface: '#1e1e1e'
     },
+
     blue: {
       name: 'blue',
       primary: '#0288d1',
@@ -33,6 +47,7 @@ export class ThemeService {
       background: '#e3f2fd',
       surface: '#ffffff'
     },
+
     red: {
       name: 'red',
       primary: '#d32f2f',
@@ -43,19 +58,33 @@ export class ThemeService {
     }
   };
 
-  constructor() {
-    const savedTheme = localStorage.getItem('theme') as ThemeName | null;
-    if (savedTheme && this.themes[savedTheme]) {
-      this.setTheme(savedTheme);
-    } else {
-      this.setTheme('light');
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
+
+    this.isBrowser = isPlatformBrowser(this.platformId);
+
+    if (this.isBrowser) {
+
+      const savedTheme = localStorage.getItem('theme') as ThemeName | null;
+
+      if (savedTheme && this.themes[savedTheme]) {
+        this.setTheme(savedTheme);
+      } else {
+        this.setTheme('light');
+      }
+
     }
   }
 
   setTheme(theme: ThemeName): void {
+
     this.currentTheme.set(theme);
-    localStorage.setItem('theme', theme);
-    this.applyTheme(theme);
+
+    if (this.isBrowser) {
+      localStorage.setItem('theme', theme);
+      this.applyTheme(theme);
+    }
   }
 
   getTheme(name: ThemeName): any {
@@ -67,7 +96,11 @@ export class ThemeService {
   }
 
   private applyTheme(themeName: ThemeName): void {
+
+    if (!this.isBrowser) return;
+
     const theme = this.themes[themeName];
+
     const root = document.documentElement;
 
     root.style.setProperty('--primary-color', theme.primary);
@@ -76,8 +109,13 @@ export class ThemeService {
     root.style.setProperty('--background-color', theme.background);
     root.style.setProperty('--surface-color', theme.surface);
 
-    // Apply to body for Material theming
-    document.body.classList.remove('light-theme', 'dark-theme', 'blue-theme', 'red-theme');
+    document.body.classList.remove(
+      'light-theme',
+      'dark-theme',
+      'blue-theme',
+      'red-theme'
+    );
+
     document.body.classList.add(`${themeName}-theme`);
   }
 }

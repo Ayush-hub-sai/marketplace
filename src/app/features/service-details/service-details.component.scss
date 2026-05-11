@@ -1,4 +1,4 @@
-@import '../../assets/themes/variables';
+@use '../../../assets/themes/variables' as *;
 
 .service-details-container {
   display: grid;

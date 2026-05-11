@@ -297,7 +297,7 @@ describe('ItemComponent', () => {
 ### SCSS Structure
 ```scss
 // Component SCSS
-@import '../../assets/themes/variables';
+@use '../../../assets/themes/variables' as *;
 
 .component {
   display: flex;

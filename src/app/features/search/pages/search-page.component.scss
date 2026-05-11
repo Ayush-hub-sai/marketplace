@@ -1,5 +1,4 @@
-@import '../../../assets/themes/variables';
-
+@use '../../../../assets/themes/variables' as *;
 .search-page-container {
   min-height: 100vh;
   background-color: $background-light;

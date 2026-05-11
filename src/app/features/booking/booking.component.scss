@@ -1,4 +1,4 @@
-@import '../../assets/themes/variables';
+@use '../../../assets/themes/variables' as *;
 
 .booking-container {
   max-width: 1000px;
