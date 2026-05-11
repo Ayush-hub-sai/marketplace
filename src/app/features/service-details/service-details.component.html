@@ -1,0 +1,226 @@
+<div class="service-details-container">
+  <!-- Loading State -->
+  <div *ngIf="loading$ | async" class="loading-wrapper">
+    <app-loader [message]="'Loading service details...'"></app-loader>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="service$ | async as service; else noService" class="service-details-content">
+    <!-- Hero Section with Images -->
+    <div class="hero-section">
+      <div class="service-images">
+        <img
+          appLazyLoad
+          [appLazyLoadSrc]="(service.images && service.images[0]) || 'assets/placeholder.png'"
+          alt="{{ service.name }}"
+          class="main-image"
+        />
+        <div class="thumbnail-gallery" *ngIf="service.images && service.images.length > 1">
+          <img
+            appLazyLoad
+            *ngFor="let image of service.images"
+            [appLazyLoadSrc]="image"
+            alt="Service image"
+            class="thumbnail"
+          />
+        </div>
+      </div>
+
+      <!-- Quick Info Card -->
+      <div class="quick-info">
+        <div class="rating">
+          <mat-icon class="star">star</mat-icon>
+          <span class="rating-value">{{ service.rating || 4.5 }}</span>
+          <span class="rating-count">({{ service.reviewCount || 0 }} reviews)</span>
+        </div>
+        <h1 class="service-title">{{ service.name }}</h1>
+        <p class="provider-name">by {{ service.providerName }}</p>
+        <div class="price-section">
+          <span class="price">₹{{ service.price }}</span>
+          <span *ngIf="service.originalPrice" class="original-price">₹{{ service.originalPrice }}</span>
+        </div>
+        <div class="service-tags">
+          <mat-chip
+            *ngFor="let tag of service.tags"
+            class="service-tag"
+          >
+            {{ tag }}
+          </mat-chip>
+        </div>
+      </div>
+    </div>
+
+    <!-- Service Details Tabs -->
+    <mat-tab-group class="details-tabs" animationDuration="300">
+      <!-- Overview Tab -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon>info</mat-icon>
+          Overview
+        </ng-template>
+
+        <div class="tab-content">
+          <h3>Service Description</h3>
+          <p class="description">{{ service.description }}</p>
+
+          <h3 class="mt-32">What's Included</h3>
+          <ul class="features-list">
+            <li *ngFor="let feature of service.features">
+              <mat-icon>check_circle</mat-icon>
+              <span>{{ feature }}</span>
+            </li>
+          </ul>
+
+          <h3 class="mt-32">Specifications</h3>
+          <div class="specs-grid">
+            <div *ngFor="let spec of service.specifications" class="spec-item">
+              <label>{{ spec.key }}</label>
+              <p>{{ spec.value }}</p>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Provider Tab -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon>person</mat-icon>
+          Provider
+        </ng-template>
+
+        <div class="tab-content provider-info">
+          <div class="provider-header">
+            <img [src]="service.providerImage" alt="{{ service.providerName }}" class="provider-avatar" />
+            <div>
+              <h3>{{ service.providerName }}</h3>
+              <p class="provider-category">{{ service.categoryName }}</p>
+              <div class="provider-stats">
+                <span><mat-icon>star</mat-icon> {{ service.providerRating || 4.5 }} rating</span>
+                <span><mat-icon>assignment_turned_in</mat-icon> {{ service.completedJobs || 0 }} jobs</span>
+                <span><mat-icon>thumb_up</mat-icon> {{ service.providerReviewCount || 0 }}% positive</span>
+              </div>
+            </div>
+          </div>
+          <p class="provider-bio">{{ service.providerBio }}</p>
+          <button mat-raised-button color="accent" class="view-profile-btn">
+            View Full Profile
+          </button>
+        </div>
+      </mat-tab>
+
+      <!-- Reviews Tab -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon>reviews</mat-icon>
+          Reviews
+        </ng-template>
+
+        <div class="tab-content reviews-section">
+          <div *ngIf="reviews$ | async as reviews; else noReviews">
+            <div *ngFor="let review of reviews" class="review-card">
+              <div class="review-header">
+                <img [src]="review.userImage" alt="{{ review.userName }}" class="review-avatar" />
+                <div class="review-meta">
+                  <h4>{{ review.userName }}</h4>
+                  <div class="rating-stars">
+                    <mat-icon *ngFor="let i of [1, 2, 3, 4, 5]" [class.filled]="i <= review.rating">
+                      star
+                    </mat-icon>
+                  </div>
+                  <p class="review-date">{{ review.createdAt | date: 'medium' }}</p>
+                </div>
+              </div>
+              <p class="review-text">{{ review.comment }}</p>
+            </div>
+          </div>
+          <ng-template #noReviews>
+            <p class="no-data">No reviews yet</p>
+          </ng-template>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+
+    <!-- Related Services -->
+    <section class="related-services" appLazyLoadContent (onVisible)="onRelatedServicesVisible()">
+      <h3>Similar Services</h3>
+      <div class="services-grid" *ngIf="relatedServicesLoaded$ | async; then showRelated; else loadingRelated"></div>
+
+      <ng-template #showRelated>
+        <div class="services-grid">
+          <app-service-card
+            *ngFor="let relatedService of relatedServices$ | async"
+            [service]="relatedService"
+            (click)="onServiceSelect(relatedService?.id)"
+            class="service-card"
+          ></app-service-card>
+        </div>
+      </ng-template>
+
+      <ng-template #loadingRelated>
+        <app-loader [message]="'Loading similar services...'"></app-loader>
+      </ng-template>
+    </section>
+  </div>
+
+  <!-- Book Service Section -->
+  <div class="booking-sidebar" *ngIf="service$ | async as service">
+    <div class="booking-card">
+      <h3>Book This Service</h3>
+      <div class="booking-summary">
+        <div class="summary-row">
+          <span>Service Price:</span>
+          <strong>₹{{ service.price }}</strong>
+        </div>
+        <div class="summary-row" *ngIf="service.tax">
+          <span>Tax ({{ service.taxPercent || 18 }}%):</span>
+          <strong>₹{{ service.tax }}</strong>
+        </div>
+        <div class="summary-row total">
+          <span>Total:</span>
+          <strong>₹{{ (service.price || 0) + (service.tax || 0) }}</strong>
+        </div>
+      </div>
+
+      <div class="booking-form">
+        <mat-form-field class="full-width">
+          <mat-label>Select Date</mat-label>
+          <input matInput [matDatepicker]="picker" />
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field class="full-width">
+          <mat-label>Select Time Slot</mat-label>
+          <mat-select>
+            <mat-option *ngFor="let slot of availableTimeSlots" [value]="slot">
+              {{ slot }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <textarea matInput placeholder="Additional notes (optional)" rows="4" class="notes-field"></textarea>
+      </div>
+
+      <button mat-raised-button color="primary" class="book-btn" (click)="onBook()">
+        <mat-icon>shopping_cart</mat-icon>
+        Book Now
+      </button>
+      <button mat-stroked-button class="save-btn" (click)="onSave()">
+        <mat-icon>favorite_border</mat-icon>
+        Save for Later
+      </button>
+    </div>
+  </div>
+
+  <!-- No Service Template -->
+  <ng-template #noService>
+    <div class="no-service">
+      <mat-icon class="error-icon">error_outline</mat-icon>
+      <h2>Service Not Found</h2>
+      <p>The service you're looking for doesn't exist or has been removed.</p>
+      <button mat-raised-button color="primary" routerLink="/search">
+        Back to Search
+      </button>
+    </div>
+  </ng-template>
+</div>

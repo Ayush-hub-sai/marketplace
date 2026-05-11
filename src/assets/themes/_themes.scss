@@ -1,0 +1,145 @@
+@import './variables';
+
+// Light Theme
+.light-theme {
+  --primary-color: #{$light-primary};
+  --accent-color: #{$light-accent};
+  --warn-color: #{$light-warn};
+  --background-color: #{$light-background};
+  --surface-color: #{$light-surface};
+  --text-color: #{$light-text};
+  --text-secondary-color: #{$light-text-secondary};
+
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+// Dark Theme
+.dark-theme {
+  --primary-color: #{$dark-primary};
+  --accent-color: #{$dark-accent};
+  --warn-color: #{$dark-warn};
+  --background-color: #{$dark-background};
+  --surface-color: #{$dark-surface};
+  --text-color: #{$dark-text};
+  --text-secondary-color: #{$dark-text-secondary};
+
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+// Blue Theme
+.blue-theme {
+  // --primary-color: #{$blue-primary};
+  // --accent-color: #{$blue-accent};
+  // --warn-color: #{$blue-warn};
+  // --background-color: #{$blue-background};
+  // --surface-color: #{$blue-surface};
+  // --text-color: #{$blue-text};
+  // --text-secondary-color: #{$blue-text-secondary};
+
+  // background-color: var(--background-color);
+  // color: var(--text-color);
+}
+
+// Red Theme
+.red-theme {
+  // --primary-color: #{$red-primary};
+  // --accent-color: #{$red-accent};
+  // --warn-color: #{$red-warn};
+  // --background-color: #{$red-background};
+  // --surface-color: #{$red-surface};
+  // --text-color: #{$red-text};
+  // --text-secondary-color: #{$red-text-secondary};
+
+  // background-color: var(--background-color);
+  // color: var(--text-color);
+}
+
+// Common styles for all themes
+body {
+  font-family: $font-family;
+  font-size: $font-size-base;
+  line-height: 1.5;
+  transition: background-color $transition-base, color $transition-base;
+}
+
+// Material overrides for themes
+.mat-mdc-button,
+.mat-mdc-raised-button {
+  &.mat-primary {
+    background-color: var(--primary-color) !important;
+    color: white !important;
+  }
+
+  &.mat-accent {
+    background-color: var(--accent-color) !important;
+    color: white !important;
+  }
+
+  &.mat-warn {
+    background-color: var(--warn-color) !important;
+    color: white !important;
+  }
+}
+
+.mat-mdc-card {
+  background-color: var(--surface-color) !important;
+  color: var(--text-color) !important;
+}
+
+.mat-toolbar {
+  background-color: var(--surface-color) !important;
+  color: var(--text-color) !important;
+  box-shadow: $shadow-md;
+}
+
+.mat-form-field {
+  .mat-mdc-form-field-focus-overlay {
+    background-color: var(--primary-color) !important;
+  }
+
+  .mat-mdc-form-field-label {
+    color: var(--text-secondary-color) !important;
+  }
+}
+
+// Input styling
+input,
+textarea,
+select {
+  background-color: var(--surface-color);
+  color: var(--text-color);
+  border: 1px solid var(--text-secondary-color);
+  padding: $spacing-sm;
+  border-radius: $border-radius-md;
+
+  &:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(var(--primary-color), 0.1);
+  }
+
+  &::placeholder {
+    color: var(--text-secondary-color);
+  }
+}
+
+// Scrollbar styling
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: $border-radius-md;
+
+  &:hover {
+    background: var(--accent-color);
+  }
+}

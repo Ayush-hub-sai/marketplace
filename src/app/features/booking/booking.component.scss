@@ -1,0 +1,370 @@
+@import '../../assets/themes/variables';
+
+.booking-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
+}
+
+// ============ Page Header ============
+.page-header {
+  margin-bottom: 2rem;
+
+  h1 {
+    font-size: $font-size-3xl;
+    font-weight: $font-weight-bold;
+    margin: 0 0 0.5rem;
+    color: $text-primary;
+  }
+
+  p {
+    font-size: $font-size-base;
+    color: $text-secondary;
+    margin: 0;
+  }
+}
+
+// ============ Filters Section ============
+.filters-section {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid $border-color;
+  overflow-x: auto;
+
+  &::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $primary-color;
+    border-radius: 2px;
+  }
+}
+
+.filter-group {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background-color: $background-light;
+  border: 2px solid $border-light;
+  border-radius: $radius-full;
+  cursor: pointer;
+  transition: all $transition-base;
+  white-space: nowrap;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $text-secondary;
+
+  &:hover {
+    border-color: $primary-color;
+    color: $primary-color;
+  }
+
+  &.active {
+    background-color: $primary-color;
+    border-color: $primary-color;
+    color: white;
+  }
+
+  .count {
+    opacity: 0.7;
+  }
+}
+
+.status-badge {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+
+  &.status-pending {
+    background-color: $warning-color;
+  }
+
+  &.status-confirmed {
+    background-color: $info-color;
+  }
+
+  &.status-in-progress {
+    background-color: $primary-color;
+  }
+
+  &.status-completed {
+    background-color: $success-color;
+  }
+
+  &.status-cancelled {
+    background-color: $error-color;
+  }
+}
+
+// ============ Loading State ============
+.loading-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+// ============ Bookings List ============
+.bookings-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.bookings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+// ============ Booking Card ============
+.booking-card {
+  position: relative;
+  background-color: white;
+  border: 2px solid $border-light;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  transition: all $transition-base;
+  box-shadow: $shadow-sm;
+
+  &:hover {
+    box-shadow: $shadow-md;
+    border-color: $primary-color;
+  }
+}
+
+.status-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: white;
+
+  &.status-pending {
+    background-color: $warning-color;
+  }
+
+  &.status-confirmed {
+    background-color: $info-color;
+  }
+
+  &.status-in-progress {
+    background-color: $primary-color;
+  }
+
+  &.status-completed {
+    background-color: $success-color;
+  }
+
+  &.status-cancelled {
+    background-color: $error-color;
+  }
+}
+
+.booking-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1.5rem;
+  padding-top: 2.5rem;
+  border-bottom: 1px solid $border-light;
+}
+
+.booking-title {
+  flex: 1;
+
+  h3 {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    margin: 0 0 0.25rem;
+    color: $text-primary;
+  }
+
+  .provider-name {
+    font-size: $font-size-sm;
+    color: $text-secondary;
+    margin: 0;
+  }
+}
+
+.booking-meta {
+  text-align: right;
+
+  .booking-id {
+    font-size: $font-size-sm;
+    color: $text-secondary;
+    font-family: monospace;
+  }
+}
+
+// ============ Booking Details ============
+.booking-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  padding: 1.5rem;
+  background-color: $background-light;
+  border-bottom: 1px solid $border-light;
+}
+
+.detail-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  mat-icon {
+    color: $primary-color;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  .detail-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .label {
+    display: block;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semibold;
+    text-transform: uppercase;
+    color: $text-secondary;
+  }
+
+  .value {
+    display: block;
+    font-size: $font-size-base;
+    color: $text-primary;
+    word-break: break-word;
+  }
+}
+
+// ============ Booking Footer ============
+.booking-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+}
+
+.timeline {
+  flex: 1;
+
+  .created-date {
+    font-size: $font-size-sm;
+    color: $text-secondary;
+  }
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
+  }
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    padding: 0.5rem 1rem;
+    white-space: nowrap;
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  .cancel-btn {
+    color: $error-color;
+
+    &:hover {
+      background-color: rgba($error-color, 0.1);
+    }
+  }
+
+  .review-btn {
+    color: $warning-color;
+
+    &:hover {
+      background-color: rgba($warning-color, 0.1);
+    }
+  }
+}
+
+// ============ Empty States ============
+.no-bookings,
+.no-results {
+  text-align: center;
+  padding: 3rem 1rem;
+  background-color: $background-light;
+  border-radius: $radius-lg;
+  border: 2px dashed $border-color;
+
+  .empty-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 1rem;
+    color: $text-secondary;
+    opacity: 0.5;
+  }
+
+  h3 {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    margin: 0 0 0.5rem;
+    color: $text-primary;
+  }
+
+  p {
+    font-size: $font-size-base;
+    color: $text-secondary;
+    margin: 0 0 1.5rem;
+  }
+
+  button {
+    margin-top: 1rem;
+  }
+}

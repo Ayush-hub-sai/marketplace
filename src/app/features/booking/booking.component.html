@@ -1,0 +1,150 @@
+<div class="booking-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <h1>My Bookings</h1>
+    <p>View and manage all your service bookings</p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading$ | async" class="loading-wrapper">
+    <app-loader [message]="'Loading your bookings...'"></app-loader>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-section" *ngIf="(loading$ | async) === false">
+    <div class="filter-group">
+      <button
+        *ngFor="let status of filterStatuses"
+        [class.active]="selectedStatus === status"
+        (click)="onFilterChange(status)"
+        class="filter-btn"
+      >
+        <span class="status-badge" [class]="'status-' + status"></span>
+        {{ status | titlecase }}
+        <span class="count" *ngIf="getStatusCount(status) > 0">({{ getStatusCount(status) }})</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Bookings List -->
+  <div class="bookings-section" *ngIf="(loading$ | async) === false">
+    <div *ngIf="filteredBookings$ | async as bookings; else noBookings" class="bookings-list">
+      <div *ngFor="let booking of bookings" class="booking-card">
+        <!-- Status Badge -->
+        <div class="status-indicator" [class]="'status-' + booking.status">
+          <span>{{ booking.status | titlecase }}</span>
+        </div>
+
+        <!-- Booking Header -->
+        <div class="booking-header">
+          <div class="booking-title">
+            <h3>{{ booking.serviceName }}</h3>
+            <p class="provider-name">by {{ booking.providerName }}</p>
+          </div>
+          <div class="booking-meta">
+            <span class="booking-id">#{{ booking.id | slice: 0: 8 }}</span>
+          </div>
+        </div>
+
+        <!-- Booking Details -->
+        <div class="booking-details">
+          <div class="detail-row">
+            <mat-icon>event</mat-icon>
+            <div class="detail-content">
+              <span class="label">Date & Time</span>
+              <span class="value">{{ booking.bookingDate | date: 'medium' }} at {{ booking.bookingTime }}</span>
+            </div>
+          </div>
+
+          <div class="detail-row">
+            <mat-icon>attach_money</mat-icon>
+            <div class="detail-content">
+              <span class="label">Amount</span>
+              <span class="value">₹{{ booking.price }}</span>
+            </div>
+          </div>
+
+          <div class="detail-row" *ngIf="booking.notes">
+            <mat-icon>notes</mat-icon>
+            <div class="detail-content">
+              <span class="label">Notes</span>
+              <span class="value">{{ booking.notes }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Booking Footer -->
+        <div class="booking-footer">
+          <div class="timeline">
+            <span class="created-date">Booked on {{ booking.createdAt | date: 'short' }}</span>
+          </div>
+
+          <div class="actions">
+            <button
+              mat-stroked-button
+              *ngIf="booking.status === 'pending'"
+              (click)="onCancelBooking(booking)"
+              class="cancel-btn"
+            >
+              <mat-icon>close</mat-icon>
+              Cancel
+            </button>
+
+            <button
+              mat-raised-button
+              color="primary"
+              *ngIf="booking.status === 'confirmed' || booking.status === 'in-progress'"
+              (click)="onViewDetails(booking)"
+              class="details-btn"
+            >
+              <mat-icon>visibility</mat-icon>
+              View Details
+            </button>
+
+            <button
+              mat-raised-button
+              *ngIf="booking.status === 'completed'"
+              (click)="onLeaveReview(booking)"
+              class="review-btn"
+            >
+              <mat-icon>rate_review</mat-icon>
+              Leave Review
+            </button>
+
+            <button
+              mat-stroked-button
+              (click)="onRebookService(booking)"
+              class="rebook-btn"
+            >
+              <mat-icon>repeat</mat-icon>
+              Rebook
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Bookings Template -->
+    <ng-template #noBookings>
+      <div class="no-bookings">
+        <mat-icon class="empty-icon">calendar_today</mat-icon>
+        <h3>No bookings found</h3>
+        <p>You haven't made any bookings yet. Start exploring services!</p>
+        <button mat-raised-button color="primary" routerLink="/search">
+          <mat-icon>explore</mat-icon>
+          Browse Services
+        </button>
+      </div>
+    </ng-template>
+  </div>
+
+  <!-- Empty State for Filter -->
+  <div class="no-results" *ngIf="(filteredBookings$ | async)?.length === 0 && (loading$ | async) === false && selectedStatus !== 'all'">
+    <mat-icon>search_off</mat-icon>
+    <h3>No {{ selectedStatus }} bookings</h3>
+    <p>You don't have any {{ selectedStatus }} bookings at the moment.</p>
+    <button mat-stroked-button (click)="onFilterChange('all')">
+      View All Bookings
+    </button>
+  </div>
+</div>

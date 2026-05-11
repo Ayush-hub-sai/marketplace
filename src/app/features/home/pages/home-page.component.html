@@ -1,0 +1,164 @@
+<section class="hero">
+  <div class="hero-content">
+    <h1 class="hero-title">Find Local Services Near You</h1>
+    <p class="hero-subtitle">Connect with verified professionals for any service you need</p>
+    <div class="hero-actions">
+      <div class="search-container">
+        <mat-form-field class="search-field">
+          <mat-label>Search services</mat-label>
+          <input
+            matInput
+            placeholder="What service are you looking for?"
+            (keyup.enter)="onSearch($event)"
+          />
+          <button mat-icon-button matSuffix (click)="onSearch($event)">
+            <mat-icon>search</mat-icon>
+          </button>
+        </mat-form-field>
+        <button mat-raised-button color="primary" class="search-btn" (click)="onSearch($event)">
+          <mat-icon>explore</mat-icon>
+          Explore Services
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="hero-image">
+    <img src="assets/images/hero-background.png" alt="Services Hero" />
+  </div>
+</section>
+
+<!-- Statistics Section -->
+<section class="statistics">
+  <div class="stat-card" *ngFor="let stat of statistics$ | async">
+    <mat-icon class="stat-icon">{{ stat.icon }}</mat-icon>
+    <div class="stat-content">
+      <h3 class="stat-value">{{ stat.value }}</h3>
+      <p class="stat-label">{{ stat.label }}</p>
+    </div>
+  </div>
+</section>
+
+<!-- Categories Section -->
+<section class="categories-section" appLazyLoadContent (onVisible)="onCategoriesVisible()">
+  <div class="section-header">
+    <h2>Browse by Category</h2>
+    <p>Explore our wide range of professional services</p>
+  </div>
+
+  <div class="categories-grid" *ngIf="categoriesLoaded$ | async; then showCategories; else loadingCategories"></div>
+
+  <ng-template #showCategories>
+    <div class="categories-grid">
+      <div
+        *ngFor="let category of categories$ | async"
+        class="category-card"
+        [routerLink]="['/search']"
+        [queryParams]="{ category: category?.id }"
+      >
+        <div class="category-icon">
+          <mat-icon>{{ category?.icon }}</mat-icon>
+        </div>
+        <h3>{{ category?.name }}</h3>
+        <p>{{ category?.serviceCount }} Services</p>
+        <div class="category-overlay">
+          <span>Explore</span>
+          <mat-icon>arrow_forward</mat-icon>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #loadingCategories>
+    <app-loader [message]="'Loading categories...'"></app-loader>
+  </ng-template>
+</section>
+
+<!-- Popular Services Section -->
+<section class="services-section" appLazyLoadContent (onVisible)="onPopularServicesVisible()">
+  <div class="section-header">
+    <h2>Popular Services</h2>
+    <p>Most booked services this month</p>
+  </div>
+
+  <div class="services-grid" *ngIf="popularServicesLoaded$ | async; then showServices; else loadingServices"></div>
+
+  <ng-template #showServices>
+    <div class="services-grid">
+      <app-service-card
+        *ngFor="let service of popularServices$ | async"
+        [service]="service"
+        (click)="onServiceSelect(service?.id)"
+        class="service-card-item"
+      ></app-service-card>
+    </div>
+  </ng-template>
+
+  <ng-template #loadingServices>
+    <app-loader [message]="'Loading services...'"></app-loader>
+  </ng-template>
+
+  <div class="view-all">
+    <button mat-stroked-button routerLink="/search" class="view-all-btn">
+      View All Services
+      <mat-icon>arrow_forward</mat-icon>
+    </button>
+  </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="how-it-works">
+  <div class="section-header">
+    <h2>How It Works</h2>
+    <p>Simple steps to get your service done</p>
+  </div>
+
+  <div class="steps-grid">
+    <div class="step-card" *ngFor="let step of steps; let i = index">
+      <div class="step-number">{{ i + 1 }}</div>
+      <h3>{{ step.title }}</h3>
+      <p>{{ step.description }}</p>
+      <mat-icon class="step-icon">{{ step.icon }}</mat-icon>
+    </div>
+  </div>
+</section>
+
+<!-- Recent Services Section -->
+<section class="recent-services" appLazyLoadContent (onVisible)="onRecentServicesVisible()">
+  <div class="section-header">
+    <h2>Recently Added</h2>
+    <p>Check out our newest service listings</p>
+  </div>
+
+  <div class="recent-grid" *ngIf="recentServicesLoaded$ | async; then showRecentServices; else loadingRecent"></div>
+
+  <ng-template #showRecentServices>
+    <div class="recent-grid">
+      <app-service-card
+        *ngFor="let service of recentServices$ | async | slice: 0:4"
+        
+        class="recent-card-item"
+      ></app-service-card>
+    </div>
+  </ng-template>
+
+  <ng-template #loadingRecent>
+    <app-loader [message]="'Loading services...'"></app-loader>
+  </ng-template>
+</section>
+
+<!-- Call to Action Section -->
+<section class="cta-section">
+  <div class="cta-content">
+    <h2>Become a Service Provider</h2>
+    <p>Join thousands of professionals earning on our platform</p>
+    <div class="cta-features">
+      <div class="feature" *ngFor="let feature of ctaFeatures">
+        <mat-icon>{{ feature.icon }}</mat-icon>
+        <span>{{ feature.text }}</span>
+      </div>
+    </div>
+    <button mat-raised-button color="accent" class="cta-btn" routerLink="/register">
+      Get Started
+    </button>
+  </div>
+</section>

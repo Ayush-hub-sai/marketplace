@@ -1,0 +1,207 @@
+<div class="search-page-container">
+  <!-- Search Header -->
+  <div class="search-header">
+    <h1>Find Services</h1>
+    <div class="search-bar">
+      <mat-form-field class="search-field">
+        <mat-label>Search for services</mat-label>
+        <input
+          matInput
+          [(ngModel)]="searchQuery"
+          (keyup.enter)="onSearch()"
+          placeholder="e.g., Plumber, Electrician, Tutor..."
+        />
+        <button mat-icon-button matSuffix (click)="onSearch()">
+          <mat-icon>search</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="search-content">
+    <!-- Filters Sidebar -->
+    <aside class="filters-sidebar">
+      <div class="filters-header">
+        <h3>Filters</h3>
+        <button mat-icon-button (click)="onResetFilters()" class="reset-btn" title="Reset Filters">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </div>
+
+      <form [formGroup]="filterForm" (ngSubmit)="onApplyFilters()">
+        <!-- Category Filter -->
+        <div class="filter-group">
+          <label class="filter-label">Category</label>
+          <mat-form-field class="full-width">
+            <mat-label>Select Category</mat-label>
+            <mat-select formControlName="category">
+              <mat-option value="">All Categories</mat-option>
+              <mat-option *ngFor="let category of categories$ | async" [value]="category.id">
+                {{ category.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Location Filter -->
+        <div class="filter-group">
+          <label class="filter-label">Location</label>
+          <mat-form-field class="full-width">
+            <mat-label>Select Location</mat-label>
+            <mat-select formControlName="location">
+              <mat-option value="">All Locations</mat-option>
+              <mat-option *ngFor="let location of locations$ | async" [value]="location.id">
+                {{ location.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Price Range Filter -->
+        <div class="filter-group">
+          <label class="filter-label">Price Range</label>
+          <div class="price-inputs">
+            <mat-form-field class="half-width">
+              <mat-label>Min</mat-label>
+              <input matInput type="number" formControlName="minPrice" />
+            </mat-form-field>
+            <span class="price-separator">-</span>
+            <mat-form-field class="half-width">
+              <mat-label>Max</mat-label>
+              <input matInput type="number" formControlName="maxPrice" />
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- Rating Filter -->
+        <div class="filter-group">
+          <label class="filter-label">Minimum Rating</label>
+          <div class="rating-selector">
+            <button
+              type="button"
+              *ngFor="let rating of [5, 4, 3, 2, 1]"
+              [class.active]="filterForm.get('rating')?.value === rating"
+              (click)="selectRating(rating)"
+              class="rating-btn"
+            >
+              <mat-icon>star</mat-icon>
+              {{ rating }}+
+            </button>
+          </div>
+        </div>
+
+        <!-- Sort By -->
+        <div class="filter-group">
+          <label class="filter-label">Sort By</label>
+          <mat-form-field class="full-width">
+            <mat-label>Sort Order</mat-label>
+            <mat-select formControlName="sortBy">
+              <mat-option value="relevance">Relevance</mat-option>
+              <mat-option value="price-asc">Price: Low to High</mat-option>
+              <mat-option value="price-desc">Price: High to Low</mat-option>
+              <mat-option value="rating">Highest Rated</mat-option>
+              <mat-option value="newest">Newest First</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Apply Button -->
+        <div class="filter-actions">
+          <button type="submit" mat-raised-button color="primary" class="apply-btn">
+            <mat-icon>tune</mat-icon>
+            Apply Filters
+          </button>
+        </div>
+      </form>
+    </aside>
+
+    <!-- Results Section -->
+    <div class="results-section" appLazyLoadContent (onVisible)="onResultsVisible()">
+      <!-- Loading State -->
+      <div *ngIf="loading$ | async" class="loading-wrapper">
+        <app-loader [message]="'Searching services...'"></app-loader>
+      </div>
+
+      <!-- Results -->
+      <div *ngIf="(loading$ | async) === false && (resultsLoaded$ | async); then showResults; else noLoaded"></div>
+
+      <ng-template #showResults>
+        <div class="results-container">
+          <!-- Results Header -->
+          <div class="results-header" *ngIf="(results$ | async) as results; else noResults">
+            <div class="results-info">
+              <h2>Search Results</h2>
+              <p class="result-count">
+                Found <strong>{{ results.total }}</strong> services
+                <span *ngIf="searchQuery" class="search-query"> for "{{ searchQuery }}"</span>
+              </p>
+            </div>
+          </div>
+
+          <!-- Services Grid -->
+          <div *ngIf="(results$ | async) as results; else noResults" class="services-grid">
+            <app-service-card
+              *ngFor="let service of results.services"
+              [service]="service"
+              (click)="onSelectService(service?.id)"
+              class="service-item"
+            ></app-service-card>
+
+            <!-- Empty Results -->
+            <div *ngIf="results.services.length === 0" class="no-results-message">
+              <mat-icon>search_off</mat-icon>
+              <h3>No services found</h3>
+              <p>Try adjusting your filters or search terms</p>
+            </div>
+          </div>
+
+          <!-- Pagination -->
+          <div class="pagination" *ngIf="(results$ | async) as results">
+            <button
+              mat-stroked-button
+              (click)="onPreviousPage()"
+              [disabled]="results.page === 1"
+              class="pagination-btn"
+            >
+              <mat-icon>chevron_left</mat-icon>
+              Previous
+            </button>
+
+            <div class="page-info">
+              Page <strong>{{ results.page }}</strong> of
+              <strong>{{ getTotalPages(results.total, results.limit) }}</strong>
+            </div>
+
+            <button
+              mat-stroked-button
+              (click)="onNextPage()"
+              [disabled]="!results.hasMore"
+              class="pagination-btn"
+            >
+              Next
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+          </div>
+        </div>
+      </ng-template>
+
+      <ng-template #noLoaded>
+        <app-loader [message]="'Loading...'"></app-loader>
+      </ng-template>
+
+      <!-- No Results Template -->
+      <ng-template #noResults>
+        <div class="no-results-wrapper">
+          <mat-icon class="empty-icon">search_off</mat-icon>
+          <h3>No services available</h3>
+          <p>Please try a different search or adjust your filters</p>
+          <button mat-raised-button color="primary" (click)="onResetFilters()">
+            <mat-icon>refresh</mat-icon>
+            Clear Filters
+          </button>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>
