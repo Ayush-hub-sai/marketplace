@@ -13,7 +13,7 @@ import { takeUntil, catchError } from 'rxjs/operators';
 import { HomeService } from '../home.service';
 import { LoaderComponent } from '../../../shared/components/loader/loader.component';
 import { ServiceCardComponent } from '../../../shared/components/service-card/service-card.component';
-import { ServiceCategory, ServiceModel } from '../../../core/models/service.model';
+import { ServiceCategory, ServiceListing, ServiceModel } from '../../../core/models/service.model';
 import { LazyLoadDirective, LazyLoadContentDirective } from '../../../shared/directives';
 import { LocationService } from '../../../core/services/location.service';
 
@@ -32,7 +32,6 @@ import { LocationService } from '../../../core/services/location.service';
     MatInputModule,
     LoaderComponent,
     ServiceCardComponent,
-    // LazyLoadDirective,
     LazyLoadContentDirective
   ],
   templateUrl: './home-page.component.html',
@@ -41,8 +40,8 @@ import { LocationService } from '../../../core/services/location.service';
 })
 export class HomePageComponent implements OnInit, OnDestroy {
   categories$: Observable<ServiceCategory[] | any> = new Observable();
-  popularServices$: Observable<ServiceModel[] | any> = new Observable();
-  recentServices$: Observable<ServiceModel[] | any> = new Observable();
+  popularServices$: Observable<ServiceListing[]> = new Observable<ServiceListing[]>();
+  recentServices$: Observable<ServiceListing[]> = new Observable<ServiceListing[]>();
   statistics$: Observable<any> = new Observable();
 
   // Lazy loading states

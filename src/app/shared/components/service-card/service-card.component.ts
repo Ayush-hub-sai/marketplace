@@ -22,37 +22,37 @@ import { ServiceListing } from '../../../core/models/service.model';
     <mat-card class="service-card" matRipple>
       <div class="card-image">
         <img
-          [src]="service.images[0] || 'assets/placeholder.jpg'"
-          [alt]="service.name"
+          [src]="service?.images?.[0] || 'assets/placeholder.jpg'"
+          [alt]="service?.name"
           class="image"
         />
         <div class="card-overlay">
           <button
             mat-fab
             class="view-btn"
-            [routerLink]="['/service', service.id]"
+            [routerLink]="['/service', service?.id]"
           >
             <mat-icon>arrow_forward</mat-icon>
           </button>
         </div>
-        <div class="badge" *ngIf="service.distance">
-          {{ service.distance | number : '1.1-1' }} km away
+        <div class="badge" *ngIf="service?.distance">
+          {{ service?.distance | number : '1.1-1' }} km away
         </div>
       </div>
 
       <mat-card-content class="card-content">
-        <h3 class="service-name">{{ service.name }}</h3>
+        <h3 class="service-name">{{ service?.name }}</h3>
 
         <div class="provider-info">
           <img
-            [src]="service.provider.avatar || 'assets/placeholder-avatar.jpg'"
-            [alt]="service.provider.name"
+            [src]="service?.provider?.avatar || 'https://i.pravatar.cc/150?img=3'"
+            [alt]="service?.provider?.name"
             class="provider-avatar"
           />
           <div class="provider-details">
-            <p class="provider-name">{{ service.provider.name }}</p>
+            <p class="provider-name">{{ service?.provider?.name }}</p>
             <p class="provider-role">
-              {{ service.provider.role | titlecase }}
+              {{ service?.provider?.role | titlecase }}
             </p>
           </div>
         </div>
@@ -60,16 +60,16 @@ import { ServiceListing } from '../../../core/models/service.model';
         <div class="service-meta">
           <div class="rating">
             <mat-icon class="star">star</mat-icon>
-            <span>{{ service.rating | number : '1.1-1' }}</span>
-            <span class="review-count">({{ service.reviewCount }} reviews)</span>
+            <span>{{ service?.rating | number : '1.1-1' }}</span>
+            <span class="review-count">({{ service?.reviewCount }} reviews)</span>
           </div>
           <div class="price">
             <span class="currency">₹</span>
-            <span class="amount">{{ service.price | number : '1.0-0' }}</span>
+            <span class="amount">{{ service?.price | number : '1.0-0' }}</span>
           </div>
         </div>
 
-        <p class="description">{{ service.description | slice : 0 : 80 }}...</p>
+        <p class="description">{{ service?.description | slice : 0 : 80 }}...</p>
 
         <div class="card-actions">
           <button mat-raised-button color="primary" class="book-btn">
@@ -274,7 +274,7 @@ import { ServiceListing } from '../../../core/models/service.model';
   `]
 })
 export class ServiceCardComponent {
-  @Input() service!: ServiceListing;
+  @Input() service: ServiceListing | null = null;
   isFavorited = false;
 
   toggleFavorite(): void {

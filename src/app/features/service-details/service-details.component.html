@@ -11,7 +11,7 @@
       <div class="service-images">
         <img
           appLazyLoad
-          [appLazyLoadSrc]="(service.images && service.images[0]) || 'assets/placeholder.png'"
+          [appLazyLoadSrc]="(service?.images && service?.images?.[0]) || 'assets/placeholder.png'"
           alt="{{ service.name }}"
           class="main-image"
         />

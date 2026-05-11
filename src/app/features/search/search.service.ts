@@ -1,8 +1,19 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { tap, catchError } from 'rxjs/operators';
-import { ServiceModel } from '../../core/models/service.model';
+
+import {
+  Observable,
+  BehaviorSubject,
+  of
+} from 'rxjs';
+
+import {
+  delay,
+  tap
+} from 'rxjs/operators';
+
+import {
+  ServiceListing
+} from '../../core/models/service.model';
 
 export interface SearchFilters {
   query?: string;
@@ -11,13 +22,20 @@ export interface SearchFilters {
   minPrice?: number;
   maxPrice?: number;
   rating?: number;
-  sortBy?: 'relevance' | 'price-asc' | 'price-desc' | 'rating' | 'newest';
+
+  sortBy?:
+  | 'relevance'
+  | 'price-asc'
+  | 'price-desc'
+  | 'rating'
+  | 'newest';
+
   page?: number;
   limit?: number;
 }
 
 export interface SearchResults {
-  services: ServiceModel[];
+  services: ServiceListing[];
   total: number;
   page: number;
   limit: number;
@@ -28,71 +46,183 @@ export interface SearchResults {
   providedIn: 'root'
 })
 export class SearchService {
-  private readonly apiUrl = '/api/services';
-  private loadingSubject = new BehaviorSubject<boolean>(false);
-  private resultsSubject = new BehaviorSubject<SearchResults>({
-    services: [],
-    total: 0,
-    page: 1,
-    limit: 12,
-    hasMore: false
-  });
 
-  loading$ = this.loadingSubject.asObservable();
-  results$ = this.resultsSubject.asObservable();
+  private loadingSubject =
+    new BehaviorSubject<boolean>(false);
 
-  constructor(private http: HttpClient) {}
+  private resultsSubject =
+    new BehaviorSubject<SearchResults>({
+      services: [],
+      total: 0,
+      page: 1,
+      limit: 12,
+      hasMore: false
+    });
+
+  loading$ =
+    this.loadingSubject.asObservable();
+
+  results$ =
+    this.resultsSubject.asObservable();
+
+  constructor() { }
 
   /**
-   * Search services with filters
+   * Search services
    */
-  searchServices(filters: SearchFilters): Observable<SearchResults> {
+
+  searchServices(
+    filters: SearchFilters
+  ): Observable<SearchResults> {
+
     this.loadingSubject.next(true);
 
-    let params = new HttpParams();
+    const limit =
+      filters.limit || 12;
 
-    if (filters.query) params = params.set('q', filters.query);
-    if (filters.category) params = params.set('category', filters.category);
-    if (filters.location) params = params.set('location', filters.location);
-    if (filters.minPrice) params = params.set('minPrice', filters.minPrice.toString());
-    if (filters.maxPrice) params = params.set('maxPrice', filters.maxPrice.toString());
-    if (filters.rating) params = params.set('rating', filters.rating.toString());
-    if (filters.sortBy) params = params.set('sortBy', filters.sortBy);
-    if (filters.page) params = params.set('page', filters.page.toString());
-    if (filters.limit) params = params.set('limit', filters.limit.toString());
+    const services: ServiceListing[] =
+      Array.from(
+        { length: limit },
+        (_, i) => ({
+          id: `${i + 1}`,
 
-    return this.http.get<SearchResults>(`${this.apiUrl}/search`, { params }).pipe(
-      tap(results => {
-        this.resultsSubject.next(results);
+          name:
+            filters.query
+              ? `${filters.query} Service ${i + 1}`
+              : `Service ${i + 1}`,
+
+          description:
+            'Professional trusted service provider.',
+
+          category:
+            'electrician' as any,
+
+          categoryName:
+            filters.category || 'Electrician',
+
+          provider: {
+            id: '1',
+            name: 'John Doe',
+            email: 'john@example.com',
+            role: 'provider',
+            avatar:
+              'https://i.pravatar.cc/150?img=3'
+          } as any,
+
+          providerId: '1',
+
+          providerName: 'John Doe',
+
+          price: 500 + (i * 100),
+
+          rating: 4.5,
+
+          reviewCount: 15 + i,
+
+          images: [
+            'https://picsum.photos/400/300'
+          ],
+
+          isActive: true,
+
+          createdAt: new Date(),
+
+          updatedAt: new Date(),
+
+          distance: 2.5,
+
+          availability: 'Available',
+
+          responseTime: '10 mins'
+        })
+      );
+
+    const results: SearchResults = {
+      services,
+      total: services.length,
+      page: filters.page || 1,
+      limit,
+      hasMore: false
+    };
+
+    return of(results).pipe(
+
+      delay(500),
+
+      tap((res) => {
+
+        this.resultsSubject.next(res);
+
         this.loadingSubject.next(false);
-      }),
-      catchError(error => {
-        this.loadingSubject.next(false);
-        throw error;
       })
     );
   }
 
   /**
-   * Get categories for filter dropdown
+   * Categories
    */
+
   getCategories(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/categories`);
+
+    return of([
+      {
+        id: '1',
+        name: 'Electrician',
+        icon: 'electrical_services'
+      },
+      {
+        id: '2',
+        name: 'Plumber',
+        icon: 'plumbing'
+      },
+      {
+        id: '3',
+        name: 'Tutor',
+        icon: 'school'
+      },
+      {
+        id: '4',
+        name: 'Cleaner',
+        icon: 'cleaning_services'
+      }
+    ]).pipe(
+      delay(300)
+    );
   }
 
   /**
-   * Get locations for filter dropdown
+   * Locations
    */
+
   getLocations(): Observable<any[]> {
-    return this.http.get<any[]>(`/api/locations`);
+
+    return of([
+      'Kolkata',
+      'Delhi',
+      'Mumbai',
+      'Bangalore',
+      'Hyderabad',
+      'Chennai'
+    ]).pipe(
+      delay(300)
+    );
   }
 
   /**
-   * Get search suggestions based on query
+   * Search suggestions
    */
-  getSearchSuggestions(query: string): Observable<string[]> {
-    return this.http.get<string[]>(`${this.apiUrl}/suggestions`, {
-      params: new HttpParams().set('q', query)
-    });
+
+  getSearchSuggestions(
+    query: string
+  ): Observable<string[]> {
+
+    return of([
+      `${query} repair`,
+      `${query} installation`,
+      `${query} service`,
+      `${query} near me`
+    ]).pipe(
+      delay(200)
+    );
   }
 }
