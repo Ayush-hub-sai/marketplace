@@ -1,7 +1,7 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
-import { HttpClientModule } from '@angular/common/http';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,10 +11,14 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Observable, Subject, throwError, BehaviorSubject } from 'rxjs';
-import { switchMap, takeUntil, catchError } from 'rxjs/operators';
+import { switchMap, takeUntil, catchError, finalize, filter } from 'rxjs/operators';
 import { ServiceModel } from '../../core/models/service.model';
 import { ServiceDetailsService } from './service-details.service';
+import { BookingService } from '../booking/booking.service';
+import { AuthService } from '../../core/services/auth.service';
 import { LoaderComponent } from '../../shared/components/loader/loader.component';
 import { ServiceCardComponent } from '../../shared/components/service-card/service-card.component';
 import { LazyLoadDirective, LazyLoadContentDirective } from '../../shared/directives';
@@ -25,7 +29,7 @@ import { LazyLoadDirective, LazyLoadContentDirective } from '../../shared/direct
   imports: [
     CommonModule,
     RouterModule,
-    HttpClientModule,
+    ReactiveFormsModule,
     MatTabsModule,
     MatIconModule,
     MatButtonModule,
@@ -35,6 +39,8 @@ import { LazyLoadDirective, LazyLoadContentDirective } from '../../shared/direct
     MatDatepickerModule,
     MatNativeDateModule,
     MatSelectModule,
+    MatProgressSpinnerModule,
+    MatSnackBarModule,
     LoaderComponent,
     ServiceCardComponent,
     LazyLoadDirective,
@@ -45,107 +51,177 @@ import { LazyLoadDirective, LazyLoadContentDirective } from '../../shared/direct
   providers: [ServiceDetailsService]
 })
 export class ServiceDetailsComponent implements OnInit, OnDestroy {
-  service$: Observable<ServiceModel | null> = new Observable();
-  reviews$: Observable<any[]> = new Observable();
-  relatedServices$: Observable<ServiceModel[]> = new Observable();
-  loading$: Observable<boolean>;
 
-  // Lazy loading states
-  relatedServicesLoaded$ = new BehaviorSubject<boolean>(false);
+  private serviceDetailsService = inject(ServiceDetailsService);
+  private bookingService        = inject(BookingService);
+  private authService           = inject(AuthService);
+  private route                 = inject(ActivatedRoute);
+  private router                = inject(Router);
+  private formBuilder           = inject(FormBuilder);
+  private snackBar              = inject(MatSnackBar);
+
+  // ✅ No null — filtered in stream
+  service$!:         Observable<ServiceModel>;
+  reviews$!:         Observable<any[]>;
+  relatedServices$!: Observable<ServiceModel[]>;
+  loading$:          Observable<boolean> = this.serviceDetailsService.loading$;
+
+  bookingLoading$         = new BehaviorSubject<boolean>(false);
+  relatedServicesLoaded$  = new BehaviorSubject<boolean>(false);
+
+  bookingForm: FormGroup = this.createBookingForm();
+  isSaved = false;
 
   availableTimeSlots: string[] = [
-    '09:00 AM',
-    '10:00 AM',
-    '11:00 AM',
-    '02:00 PM',
-    '03:00 PM',
-    '04:00 PM',
-    '05:00 PM'
+    '09:00 AM', '10:00 AM', '11:00 AM',
+    '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM'
   ];
 
   private destroy$ = new Subject<void>();
-
-  constructor(
-    private serviceDetailsService: ServiceDetailsService,
-    private route: ActivatedRoute
-  ) {
-    this.loading$ = this.serviceDetailsService.loading$;
-  }
 
   ngOnInit(): void {
     this.initializeComponent();
   }
 
-  /**
-   * Initialize component with route params and load data
-   */
+  private createBookingForm(): FormGroup {
+    return this.formBuilder.group({
+      bookingDate: ['', Validators.required],
+      bookingTime: ['', Validators.required],
+      notes:       ['']
+    });
+  }
+
   private initializeComponent(): void {
     this.service$ = this.route.params.pipe(
-      switchMap(params => {
-        const serviceId = params['id'];
-        return this.serviceDetailsService.getServiceById(serviceId).pipe(
+      switchMap(params =>
+        this.serviceDetailsService.getServiceById(params['id']).pipe(
           catchError(error => {
             console.error('Error loading service:', error);
+            this.snackBar.open('Failed to load service details', 'Close', {
+              duration: 5000,
+              panelClass: ['error-snackbar']
+            });
             return throwError(() => new Error('Failed to load service'));
           })
-        );
-      }),
+        )
+      ),
+      // ✅ Type guard — removes null/undefined from stream type
+      filter((service): service is ServiceModel => service != null),
       takeUntil(this.destroy$)
     );
 
-    // Load related services and reviews
+    this.service$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(service => {
+      this.relatedServices$ = this.serviceDetailsService
+        .getRelatedServices(service.id)
+        .pipe(takeUntil(this.destroy$));
+
+      this.reviews$ = this.serviceDetailsService
+        .getProviderReviews(service.providerId)
+        .pipe(takeUntil(this.destroy$));
+    });
+  }
+
+  selectImage(index: number): void {
+    console.log('Selected image:', index);
+  }
+
+  onBook(): void {
+    if (!this.authService.isAuthenticated()) {
+      this.snackBar.open('Please login to book a service', 'Login', {
+        duration: 5000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top'
+      }).onAction().pipe(takeUntil(this.destroy$)).subscribe(() => {
+        this.router.navigate(['/auth/login']);
+      });
+      return;
+    }
+
+    if (this.bookingForm.invalid) {
+      this.snackBar.open('Please fill all required fields', 'Close', {
+        duration: 3000,
+        panelClass: ['warning-snackbar']
+      });
+      return;
+    }
+
     this.service$.pipe(
       switchMap(service => {
-        if (!service) {
-          return new Observable(observer => observer.next(null));
-        }
+        const bookingData = {
+          serviceId:    service.id,
+          serviceName:  service.name,
+          providerId:   service.providerId,
+          providerName: service.providerName,
+          bookingDate:  this.bookingForm.get('bookingDate')?.value,
+          bookingTime:  this.bookingForm.get('bookingTime')?.value,
+          notes:        this.bookingForm.get('notes')?.value,
+          price:        service.price,
+          tax:          service.tax || 0,
+          totalPrice:   (service.price || 0) + (service.tax || 0)
+        };
 
-        // Load related services
-        this.relatedServices$ = this.serviceDetailsService
-          .getRelatedServices(service.id)
-          .pipe(takeUntil(this.destroy$));
-
-        // Load reviews
-        this.reviews$ = this.serviceDetailsService
-          .getProviderReviews(service.providerId)
-          .pipe(takeUntil(this.destroy$));
-
-        return this.service$;
+        this.bookingLoading$.next(true);
+        return this.bookingService.createBooking(bookingData).pipe(
+          finalize(() => this.bookingLoading$.next(false))
+        );
       }),
       takeUntil(this.destroy$)
-    ).subscribe();
+    ).subscribe({
+      next: () => {
+        this.snackBar.open('✓ Booking created successfully!', 'View', {
+          duration: 5000,
+          panelClass: ['success-snackbar'],
+          horizontalPosition: 'end',
+          verticalPosition: 'top'
+        }).onAction().pipe(takeUntil(this.destroy$)).subscribe(() => {
+          this.router.navigate(['/bookings']);
+        });
+        this.bookingForm.reset();
+      },
+      error: (error) => {
+        console.error('Booking error:', error);
+        this.snackBar.open(
+          error.error?.message || 'Failed to create booking. Please try again.',
+          'Close',
+          { duration: 5000, panelClass: ['error-snackbar'] }
+        );
+      }
+    });
   }
 
-  /**
-   * Handle booking action
-   */
-  onBook(): void {
-    console.log('Book service');
-    // TODO: Implement booking logic
-  }
-
-  /**
-   * Handle save for later action
-   */
   onSave(): void {
-    console.log('Save service for later');
-    // TODO: Implement save logic
+    if (!this.authService.isAuthenticated()) {
+      this.snackBar.open('Please login to save services', 'Login', {
+        duration: 5000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top'
+      }).onAction().pipe(takeUntil(this.destroy$)).subscribe(() => {
+        this.router.navigate(['/auth/login']);
+      });
+      return;
+    }
+
+    this.isSaved = !this.isSaved;
+    this.snackBar.open(
+      this.isSaved ? '❤ Service saved!' : '♡ Service removed from saved',
+      'Close',
+      {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: this.isSaved ? ['success-snackbar'] : []
+      }
+    );
   }
 
-  /**
-   * Navigate to another service
-   */
   onServiceSelect(serviceId: string): void {
-    // Navigate to service details with new ID
-    this.route.params.pipe(
-      switchMap(() => this.route.params),
-      takeUntil(this.destroy$)
-    ).subscribe();
+    if (serviceId) {
+      this.router.navigate(['/service-details', serviceId]);
+    }
   }
 
-  /**
-   * Handle lazy load related services visibility
-   */
   onRelatedServicesVisible(): void {
     if (!this.relatedServicesLoaded$.value) {
       this.relatedServicesLoaded$.next(true);
@@ -155,5 +231,7 @@ export class ServiceDetailsComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    this.bookingLoading$.complete();
+    this.relatedServicesLoaded$.complete();
   }
 }

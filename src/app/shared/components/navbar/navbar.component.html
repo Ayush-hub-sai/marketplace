@@ -1,0 +1,106 @@
+<mat-toolbar class="navbar">
+  <div class="navbar-container">
+    <div class="navbar-brand">
+      <a routerLink="/" class="logo">
+        <mat-icon class="logo-icon">home_repair_service</mat-icon>
+        <span class="logo-text">ServiceHub</span>
+      </a>
+    </div>
+
+    <div class="navbar-search">
+      <mat-form-field class="search-field" appearance="outline">
+        <mat-label>Search services...</mat-label>
+        <input
+          matInput
+          #searchInput
+          (keyup.enter)="onSearch()"
+          placeholder="Search by service or location"
+        />
+        <button mat-icon-button matSuffix (click)="onSearch()">
+          <mat-icon>search</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+
+    <div class="navbar-menu">
+      <button mat-button routerLink="/search" class="nav-link">
+        <mat-icon>explore</mat-icon>
+        <span>Explore</span>
+      </button>
+
+      <button
+        mat-button
+        *ngIf="!authService.isAuthenticated()"
+        routerLink="/auth/login"
+        class="nav-link"
+      >
+        <mat-icon>login</mat-icon>
+        <span>Login</span>
+      </button>
+
+      <button
+        mat-button
+        *ngIf="authService.isAuthenticated()"
+        [matMenuTriggerFor]="userMenu"
+        class="nav-link user-menu-btn"
+      >
+        <img
+          *ngIf="authService.currentUser()?.avatar"
+          [src]="authService.currentUser()?.avatar"
+          alt="User"
+          class="user-avatar"
+        />
+        <mat-icon *ngIf="!authService.currentUser()?.avatar">account_circle</mat-icon>
+        <span>{{ authService.currentUser()?.name || 'Profile' }}</span>
+        <mat-icon class="menu-arrow">expand_more</mat-icon>
+      </button>
+
+      <button
+        mat-icon-button
+        [matMenuTriggerFor]="themeMenu"
+        class="theme-btn"
+        matTooltip="Change theme"
+      >
+        <mat-icon>{{ getThemeIcon() }}</mat-icon>
+      </button>
+    </div>
+  </div>
+</mat-toolbar>
+
+<mat-menu #userMenu="matMenu" class="user-menu">
+  <button mat-menu-item routerLink="/user-dashboard">
+    <mat-icon>dashboard</mat-icon>
+    <span>Dashboard</span>
+  </button>
+  <button mat-menu-item routerLink="/profile">
+    <mat-icon>person</mat-icon>
+    <span>Profile</span>
+  </button>
+  <button mat-menu-item routerLink="/bookings">
+    <mat-icon>calendar_today</mat-icon>
+    <span>Bookings</span>
+  </button>
+  <mat-divider></mat-divider>
+  <button mat-menu-item (click)="logout()">
+    <mat-icon>logout</mat-icon>
+    <span>Logout</span>
+  </button>
+</mat-menu>
+
+<mat-menu #themeMenu="matMenu" class="theme-menu">
+  <button
+    mat-menu-item
+    *ngFor="let theme of themeService.getAllThemes()"
+    (click)="changeTheme(theme)"
+    class="theme-option"
+    [class.active]="themeService.currentTheme() === theme"
+  >
+    <mat-icon
+      [color]="themeService.currentTheme() === theme ? 'primary' : ''"
+      class="theme-icon"
+    >
+      {{ getThemeIconForMenu(theme) }}
+    </mat-icon>
+    <span>{{ theme | titlecase }} Theme</span>
+  </button>
+</mat-menu>

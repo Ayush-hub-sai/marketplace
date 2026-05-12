@@ -1,14 +1,134 @@
-/* Global Styles */
-@use 'assets/themes/variables' as *;
-@use 'assets/themes/themes' as *;
+/* Global Styles - ServiceHub Marketplace */
+@use 'app/shared/shared-variables' as *;
+@use '@angular/material' as mat;
 
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Round');
 
-// Import theme system
-
-// Angular Material Theme (light theme as default)
+// Include Angular Material
+// @use '@angular/material/core/index';
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+// Import custom Material theme overrides
+@import 'styles-material-theme.scss';
+
+// ============= ROOT CSS CUSTOM PROPERTIES =============
+:root {
+  // Light theme (default)
+  --primary-color: #1976d2;
+  --primary-color-rgb: 25, 118, 210;
+  --primary-light: #e3f2fd;
+  --primary-dark: #1565c0;
+  
+  --accent-color: #ff4081;
+  --accent-color-rgb: 255, 64, 129;
+  
+  --warn-color: #f44336;
+  --warn-color-rgb: 244, 67, 54;
+  
+  --success-color: #4caf50;
+  --success-color-rgb: 76, 175, 80;
+  
+  --info-color: #2196f3;
+  --info-color-rgb: 33, 150, 243;
+
+  --background-color: #fafafa;
+  --surface-color: #ffffff;
+  --text-color: #212121;
+  --text-secondary-color: #757575;
+  --text-disabled-color: #bdbdbd;
+  
+  --border-color: rgba(0, 0, 0, 0.12);
+  --divider-color: rgba(0, 0, 0, 0.12);
+
+  // Spacing
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 24px;
+  --spacing-2xl: 32px;
+  --spacing-3xl: 48px;
+
+  // Border radius
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-full: 9999px;
+
+  // Shadows
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+
+  // Transitions
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// ============= DARK THEME =============
+:root.dark-theme,
+body.dark-theme {
+  --primary-color: #64b5f6;
+  --primary-color-rgb: 100, 181, 246;
+  --primary-light: #1a237e;
+  --primary-dark: #42a5f5;
+  
+  --accent-color: #ff80ab;
+  --accent-color-rgb: 255, 128, 171;
+  
+  --warn-color: #ef5350;
+  --warn-color-rgb: 239, 83, 80;
+  
+  --success-color: #66bb6a;
+  --success-color-rgb: 102, 187, 106;
+  
+  --info-color: #42a5f5;
+  --info-color-rgb: 66, 165, 245;
+
+  --background-color: #121212;
+  --surface-color: #1e1e1e;
+  --text-color: #ffffff;
+  --text-secondary-color: #b0b0b0;
+  --text-disabled-color: #808080;
+  
+  --border-color: rgba(255, 255, 255, 0.12);
+  --divider-color: rgba(255, 255, 255, 0.12);
+}
+
+// ============= BLUE THEME =============
+:root.blue-theme,
+body.blue-theme {
+  --primary-color: #0288d1;
+  --primary-color-rgb: 2, 136, 209;
+  --primary-light: #e1f5fe;
+  --primary-dark: #01579b;
+  
+  --accent-color: #00b8d4;
+  --accent-color-rgb: 0, 184, 212;
+  
+  --warn-color: #ff6f00;
+  --warn-color-rgb: 255, 111, 0;
+}
+
+// ============= RED THEME =============
+:root.red-theme,
+body.red-theme {
+  --primary-color: #d32f2f;
+  --primary-color-rgb: 211, 47, 47;
+  --primary-light: #ffebee;
+  --primary-dark: #b71c1c;
+  
+  --accent-color: #ff5722;
+  --accent-color-rgb: 255, 87, 34;
+  
+  --warn-color: #f57f17;
+  --warn-color-rgb: 245, 127, 23;
+}
 
 * {
   margin: 0;
@@ -22,22 +142,22 @@ body {
   height: 100%;
   font-family: $font-family;
   font-size: $font-size-base;
-  line-height: 1.5;
+  line-height: $line-height-normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 // Default light theme
 body {
-  background-color: var(--background-color, #fafafa);
-  color: var(--text-color, #212121);
-  transition: background-color $transition-base, color $transition-base;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: background-color var(--transition-base), color var(--transition-base);
 }
 
 // Scrollbar customization
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
@@ -45,15 +165,16 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--text-secondary-color);
-  border-radius: $border-radius-md;
+  background: rgba(var(--primary-color-rgb), 0.3);
+  border-radius: var(--radius-full);
+  transition: background var(--transition-base);
 
   &:hover {
-    background: var(--primary-color);
+    background: rgba(var(--primary-color-rgb), 0.6);
   }
 }
 
-// Remove default button styles
+// ============= BUTTON STYLES =============
 button {
   border: none;
   background: none;
@@ -61,17 +182,23 @@ button {
   font-family: inherit;
 }
 
-// Links
+// ============= LINK STYLES =============
 a {
-  color: inherit;
+  color: var(--primary-color);
   text-decoration: none;
+  transition: color var(--transition-fast);
 
   &:hover {
+    color: var(--primary-dark);
     text-decoration: underline;
+  }
+
+  &:active {
+    opacity: 0.8;
   }
 }
 
-// Form elements
+// ============= FORM ELEMENTS =============
 input,
 textarea,
 select {
@@ -86,11 +213,189 @@ select:disabled {
   cursor: not-allowed;
 }
 
-// Utility Classes
+// ============= MATERIAL FORM FIELD CUSTOMIZATIONS =============
+.mat-mdc-form-field {
+  width: 100%;
+
+  &.mat-focused {
+    .mat-mdc-form-field-focus-overlay {
+      background-color: rgba(var(--primary-color-rgb), 0.05);
+    }
+  }
+
+  .mdc-text-field {
+    background-color: var(--surface-color);
+  }
+
+  .mdc-text-field--filled {
+    background-color: rgba(var(--primary-color-rgb), 0.05);
+  }
+
+  &.mat-form-field-appearance-outline .mat-form-field-outline-thick {
+    color: var(--primary-color);
+  }
+}
+
+// Outline style for inputs and selects
+.mat-mdc-form-field-appearance-outline {
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    border-color: var(--border-color);
+  }
+
+  &.mat-focused {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: var(--primary-color);
+    }
+  }
+}
+
+// ============= MATERIAL BUTTON CUSTOMIZATIONS =============
+.mat-mdc-button,
+.mat-mdc-raised-button,
+.mat-mdc-stroked-button,
+.mat-mdc-flat-button {
+  text-transform: none;
+  font-size: inherit;
+  font-weight: $font-weight-medium;
+  letter-spacing: 0;
+  transition: all var(--transition-base);
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+}
+
+.mat-mdc-button.mat-primary,
+.mat-mdc-raised-button.mat-primary {
+  background-color: var(--primary-color) !important;
+  color: white !important;
+
+  &:hover {
+    background-color: var(--primary-dark) !important;
+  }
+}
+
+.mat-mdc-button.mat-accent,
+.mat-mdc-raised-button.mat-accent {
+  background-color: var(--accent-color) !important;
+  color: white !important;
+}
+
+.mat-mdc-button.mat-warn,
+.mat-mdc-raised-button.mat-warn {
+  background-color: var(--warn-color) !important;
+  color: white !important;
+}
+
+.mat-mdc-stroked-button.mat-primary {
+  color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+
+  &:hover {
+    background-color: rgba(var(--primary-color-rgb), 0.08);
+  }
+}
+
+// ============= MATERIAL CARD CUSTOMIZATIONS =============
+.mat-mdc-card {
+  background-color: var(--surface-color);
+  color: var(--text-color);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  transition: all var(--transition-base);
+
+  &:hover {
+    box-shadow: var(--shadow-lg);
+  }
+}
+
+// ============= MATERIAL TABS CUSTOMIZATIONS =============
+.mat-mdc-tab-header {
+  border-bottom: 1px solid var(--border-color);
+
+  .mat-mdc-tab {
+    min-width: 120px;
+
+    &.mat-mdc-tab-active {
+      color: var(--primary-color);
+
+      .mat-mdc-tab-header-pagination-chevron {
+        border-color: var(--primary-color);
+      }
+    }
+  }
+}
+
+.mdc-tab-indicator__content--underline {
+  border-color: var(--primary-color) !important;
+}
+
+// ============= MATERIAL CHIP CUSTOMIZATIONS =============
+.mat-mdc-chip {
+  background-color: rgba(var(--primary-color-rgb), 0.1);
+  color: var(--text-color);
+
+  &.mat-mdc-chip-primary {
+    background-color: var(--primary-color);
+    color: white;
+  }
+
+  &.mat-mdc-chip-accent {
+    background-color: var(--accent-color);
+    color: white;
+  }
+}
+
+// ============= MATERIAL DIALOG & MENU =============
+.mat-mdc-dialog-container {
+  background-color: var(--surface-color);
+  color: var(--text-color);
+  border-radius: var(--radius-lg);
+}
+
+.mat-mdc-menu-panel {
+  background-color: var(--surface-color);
+  color: var(--text-color);
+
+  .mat-mdc-menu-item {
+    color: var(--text-color);
+
+    &:hover {
+      background-color: rgba(var(--primary-color-rgb), 0.08);
+    }
+  }
+}
+
+// ============= MATERIAL TOOLBAR =============
+.mat-toolbar {
+  background-color: var(--surface-color);
+  color: var(--text-color);
+
+  &.mat-primary {
+    background-color: var(--primary-color);
+    color: white;
+  }
+
+  &.mat-accent {
+    background-color: var(--accent-color);
+    color: white;
+  }
+}
+
+// ============= UTILITY CLASSES =============
 .container {
-  max-width: 1400px;
+  max-width: $container-2xl;
   margin: 0 auto;
-  padding: 0 16px;
+  padding: 0 $spacing-lg;
 }
 
 .full-width {
@@ -102,9 +407,11 @@ select:disabled {
 }
 
 .flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @include flex-center;
+}
+
+.flex-between {
+  @include flex-between;
 }
 
 .grid-center {
@@ -116,69 +423,58 @@ select:disabled {
   text-align: center;
 }
 
+.text-primary {
+  color: var(--primary-color);
+}
+
+.text-secondary {
+  color: var(--text-secondary-color);
+}
+
 .text-truncate {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  @include truncate;
 }
 
-// Responsive utilities
-@media (max-width: $tablet) {
-  html,
-  body {
-    font-size: 14px;
-  }
+.text-ellipsis-2 {
+  @include line-clamp(2);
 }
 
-@media (max-width: $mobile) {
-  html,
-  body {
-    font-size: 13px;
-  }
+.text-ellipsis-3 {
+  @include line-clamp(3);
 }
 
-// Print styles
-@media print {
-  body {
-    background: white;
-  }
+// Spacing utilities
+.mt-16 { margin-top: 16px; }
+.mt-24 { margin-top: 24px; }
+.mt-32 { margin-top: 32px; }
+.mb-16 { margin-bottom: 16px; }
+.mb-24 { margin-bottom: 24px; }
+.mb-32 { margin-bottom: 32px; }
+.my-16 { margin-top: 16px; margin-bottom: 16px; }
+.my-24 { margin-top: 24px; margin-bottom: 24px; }
 
-  nav,
-  footer,
-  .no-print {
-    display: none;
-  }
+.p-16 { padding: 16px; }
+.p-24 { padding: 24px; }
+.p-32 { padding: 32px; }
+
+// Opacity utilities
+.opacity-50 { opacity: 0.5; }
+.opacity-75 { opacity: 0.75; }
+
+// Display utilities
+.hidden {
+  display: none !important;
 }
 
-// Material overrides for custom theming
-.mat-mdc-button,
-.mat-mdc-raised-button {
-  text-transform: none;
-  font-size: inherit;
-
-  &.mat-primary {
-    background-color: var(--primary-color) !important;
-  }
-
-  &.mat-accent {
-    background-color: var(--accent-color) !important;
-  }
-
-  &.mat-warn {
-    background-color: var(--warn-color) !important;
-  }
+.visible {
+  display: block !important;
 }
 
-.mat-mdc-card {
-  background-color: var(--surface-color) !important;
+.invisible {
+  visibility: hidden;
 }
 
-.mat-toolbar {
-  background-color: var(--surface-color) !important;
-  color: var(--text-color) !important;
-}
-
-// Loading animation
+// ============= LOADING ANIMATION =============
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -197,6 +493,101 @@ select:disabled {
     transform: translateY(0);
     opacity: 1;
   }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+// ============= RESPONSIVE UTILITIES =============
+@media (max-width: $breakpoint-lg) {
+  html,
+  body {
+    font-size: 15px;
+  }
+
+  .container {
+    padding: 0 $spacing-md;
+  }
+}
+
+@media (max-width: $breakpoint-md) {
+  html,
+  body {
+    font-size: 14px;
+  }
+
+  .hidden-mobile {
+    display: none !important;
+  }
+
+  .visible-mobile {
+    display: block !important;
+  }
+}
+
+@media (max-width: $breakpoint-sm) {
+  html,
+  body {
+    font-size: 13px;
+  }
+}
+
+// ============= PRINT STYLES =============
+@media print {
+  body {
+    background: white;
+    color: black;
+  }
+
+  nav,
+  footer,
+  .no-print {
+    display: none;
+  }
+
+  .container {
+    max-width: 100%;
+  }
+}
+
+// ============= SMOOTH SCROLLING =============
+html {
+  scroll-behavior: smooth;
+}
+
+// ============= PLACEHOLDER STYLES =============
+::placeholder,
+::-webkit-input-placeholder,
+::-moz-placeholder,
+:-ms-input-placeholder {
+  color: var(--text-secondary-color);
+}
+
+// ============= SELECTION STYLES =============
+::selection {
+  background-color: rgba(var(--primary-color-rgb), 0.3);
+  color: var(--text-color);
+}
+
+::-moz-selection {
+  background-color: rgba(var(--primary-color-rgb), 0.3);
+  color: var(--text-color);
 }
 
 .fade-in {

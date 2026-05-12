@@ -1,0 +1,371 @@
+@use 'sass:color';
+@use 'sass:math';
+
+// ============= COLOR PALETTE =============
+
+// Primary
+$color-primary:       #1976d2;
+$color-primary-light: #e3f2fd;
+$color-primary-dark:  #1565c0;
+
+$primary-color: #6366f1;
+$primary-light: #818cf8;
+$primary-dark: #4f46e5;
+
+// Secondary / Accent
+$color-accent:        #ff4081;
+$color-accent-light:  #ff79a8;
+$color-accent-dark:   #c60055;
+
+// Semantic
+$color-success:       #4caf50;
+$color-success-light: #6ee7b7;
+$color-success-dark:  #047857;
+
+$color-warn:          #f44336;
+$color-warn-light:    #fca5a5;
+$color-warn-dark:     #991b1b;
+
+$color-info:          #2196f3;
+$color-info-light:    #7dd3fc;
+$color-info-dark:     #0369a1;
+
+// Neutrals
+$white:               #ffffff;
+$black:               #000000;
+$light-gray:          #f3f4f6;
+$medium-gray:         #d1d5db;
+$dark-gray:           #6b7280;
+
+// Text
+$color-text-primary:   #1f2937;
+$color-text-secondary: #6b7280;
+$color-text-tertiary:  #9ca3af;
+$color-text-disabled:  #bdbdbd;
+
+// Backgrounds
+$color-background:     #fafafa;
+$color-surface:        #ffffff;
+$color-background-alt: #f3f4f6;
+
+// Borders
+$color-border:         rgba(0, 0, 0, 0.12);
+$color-border-light:   #e5e7eb;
+$color-border-dark:    #9ca3af;
+$color-divider:        rgba(0, 0, 0, 0.12);
+
+// Legacy theme aliases (kept for compatibility)
+$light-primary:          $color-primary;
+$light-accent:           $color-accent;
+$light-warn:             $color-warn;
+$light-background:       $color-background;
+$light-surface:          $color-surface;
+$light-text:             $color-text-primary;
+$light-text-secondary:   $color-text-secondary;
+
+$dark-primary:           #64b5f6;
+$dark-accent:            #ff80ab;
+$dark-warn:              #ef5350;
+$dark-background:        #121212;
+$dark-surface:           #1e1e1e;
+$dark-text:              #ffffff;
+$dark-text-secondary:    #bdbdbd;
+
+// ============= TYPOGRAPHY =============
+
+$font-family:       'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+$font-family-mono:  'Courier New', Courier, monospace;
+
+// Font sizes (px — consistent, no mixed rem/px)
+$font-size-xs:   12px;
+$font-size-sm:   14px;
+$font-size-base: 16px;
+$font-size-lg:   18px;
+$font-size-xl:   20px;
+$font-size-2xl:  24px;
+$font-size-3xl:  30px;
+$font-size-4xl:  36px;
+
+// Font weights
+$font-weight-light:     300;
+$font-weight-regular:   400;
+$font-weight-normal:    400;
+$font-weight-medium:    500;
+$font-weight-semibold:  600;
+$font-weight-bold:      700;
+$font-weight-extrabold: 800;
+
+// Line heights
+$line-height-tight:   1.25;
+$line-height-snug:    1.375;
+$line-height-normal:  1.5;
+$line-height-relaxed: 1.625;
+
+// ============= SPACING =============
+// Consistent px scale
+$spacing-xs:  4px;
+$spacing-sm:  8px;
+$spacing-md:  16px;
+$spacing-lg:  24px;
+$spacing-xl:  32px;
+$spacing-2xl: 48px;
+$spacing-3xl: 64px;
+$spacing-4xl: 96px;
+
+// ============= BORDER RADIUS =============
+$border-radius-sm:   4px;
+$border-radius-md:   8px;
+$border-radius-lg:   12px;
+$border-radius-xl:   16px;
+$border-radius-2xl:  20px;
+$border-radius-full: 9999px;
+
+// Aliases
+$radius-sm:   $border-radius-sm;
+$radius-md:   $border-radius-md;
+$radius-lg:   $border-radius-lg;
+$radius-xl:   $border-radius-xl;
+$radius-2xl:  $border-radius-2xl;
+$radius-full: $border-radius-full;
+
+// ============= SHADOWS =============
+$shadow-sm:  0 1px 2px rgba(0, 0, 0, 0.05);
+$shadow-base: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+$shadow-md:  0 4px 6px rgba(0, 0, 0, 0.1);
+$shadow-lg:  0 10px 15px rgba(0, 0, 0, 0.1);
+$shadow-xl:  0 20px 25px rgba(0, 0, 0, 0.1);
+$shadow-2xl: 0 25px 50px rgba(0, 0, 0, 0.15);
+
+// ============= TRANSITIONS =============
+$ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+$ease-in:     cubic-bezier(0.4, 0, 1, 1);
+$ease-out:    cubic-bezier(0, 0, 0.2, 1);
+
+$transition-fast: all 0.15s #{$ease-in-out};
+$transition-base: all 0.3s  #{$ease-in-out};
+$transition-slow: all 0.5s  #{$ease-in-out};
+
+// ============= BREAKPOINTS =============
+$breakpoint-xs:  480px;
+$breakpoint-sm:  640px;
+$breakpoint-md:  768px;
+$breakpoint-lg:  1024px;
+$breakpoint-xl:  1280px;
+$breakpoint-2xl: 1536px;
+
+// Legacy aliases
+$mobile:  $breakpoint-xs;
+$tablet:  $breakpoint-md;
+$desktop: $breakpoint-lg;
+$wide:    $breakpoint-xl;
+
+// ============= CONTAINER SIZES =============
+$container-sm:  640px;
+$container-md:  768px;
+$container-lg:  1024px;
+$container-xl:  1280px;
+$container-2xl: 1400px;
+
+// ============= Z-INDEX =============
+$z-index-sticky:         99;
+$z-index-navbar:         100;
+$z-index-dropdown:       1000;
+$z-index-modal-backdrop: 1040;
+$z-index-fixed:          1050;
+$z-index-modal:          1060;
+$z-index-popover:        1070;
+$z-index-tooltip:        1080;
+
+// ============= OPACITY SCALE =============
+$opacity-0:   0;
+$opacity-5:   0.05;
+$opacity-10:  0.1;
+$opacity-20:  0.2;
+$opacity-25:  0.25;
+$opacity-30:  0.3;
+$opacity-40:  0.4;
+$opacity-50:  0.5;
+$opacity-60:  0.6;
+$opacity-70:  0.7;
+$opacity-75:  0.75;
+$opacity-80:  0.8;
+$opacity-90:  0.9;
+$opacity-95:  0.95;
+$opacity-100: 1;
+
+// ============= CSS CUSTOM PROPERTIES =============
+:root {
+  // Colors with RGB for opacity support
+  --color-primary:          #{$color-primary};
+  --color-primary-rgb:      #{color.red($color-primary)}, #{color.green($color-primary)}, #{color.blue($color-primary)};
+  --color-primary-light:    #{$color-primary-light};
+  --color-primary-dark:     #{$color-primary-dark};
+
+  --color-accent:           #{$color-accent};
+  --color-accent-rgb:       #{color.red($color-accent)}, #{color.green($color-accent)}, #{color.blue($color-accent)};
+
+  --color-warn:             #{$color-warn};
+  --color-warn-rgb:         #{color.red($color-warn)}, #{color.green($color-warn)}, #{color.blue($color-warn)};
+
+  --color-success:          #{$color-success};
+  --color-success-rgb:      #{color.red($color-success)}, #{color.green($color-success)}, #{color.blue($color-success)};
+
+  --color-info:             #{$color-info};
+  --color-info-rgb:         #{color.red($color-info)}, #{color.green($color-info)}, #{color.blue($color-info)};
+
+  --color-text-primary:     #{$color-text-primary};
+  --color-text-secondary:   #{$color-text-secondary};
+  --color-text-disabled:    #{$color-text-disabled};
+
+  --color-background:       #{$color-background};
+  --color-surface:          #{$color-surface};
+  --color-border:           #{$color-border};
+}
+
+// ============= FUNCTIONS =============
+
+/// Extract RGB values from a color for use with rgba()
+/// Usage: rgba(#{rgb-values(#1976d2)}, 0.5)
+@function rgb-values($clr) {
+  @return color.red($clr), color.green($clr), color.blue($clr);
+}
+
+/// Lighten a color by a percentage
+@function tint($clr, $amount) {
+  @return color.mix(white, $clr, $amount);
+}
+
+/// Darken a color by a percentage
+@function shade($clr, $amount) {
+  @return color.mix(black, $clr, $amount);
+}
+
+// ============= MIXINS =============
+
+/// Responsive breakpoint helper
+/// Usage: @include respond-to('md') { ... }
+@mixin respond-to($breakpoint) {
+  @if      $breakpoint == 'xs' { @media (max-width: 479px)  { @content; } }
+  @else if $breakpoint == 'sm' { @media (max-width: 639px)  { @content; } }
+  @else if $breakpoint == 'md' { @media (max-width: 767px)  { @content; } }
+  @else if $breakpoint == 'lg' { @media (max-width: 1023px) { @content; } }
+  @else if $breakpoint == 'xl' { @media (max-width: 1279px) { @content; } }
+  @else {
+    @warn 'Unknown breakpoint: #{$breakpoint}';
+  }
+}
+
+/// Flexbox center
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/// Flexbox space-between
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/// Flexbox column center
+@mixin flex-column-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/// Absolute center via transform
+@mixin absolute-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/// Single-line text truncation
+@mixin truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/// Multi-line text clamp
+@mixin line-clamp($lines: 2) {
+  display: -webkit-box;
+  -webkit-line-clamp: $lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/// Placeholder color
+@mixin placeholder-color($clr) {
+  &::placeholder               { color: $clr; }
+  &::-webkit-input-placeholder { color: $clr; }
+  &::-moz-placeholder          { color: $clr; }
+  &:-ms-input-placeholder      { color: $clr; }
+}
+
+/// Focus ring for accessibility
+@mixin focus-ring($clr: $color-primary) {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(
+    #{color.red($clr)},
+    #{color.green($clr)},
+    #{color.blue($clr)},
+    0.25
+  );
+}
+
+/// Layered smooth shadow
+@mixin smooth-shadow {
+  box-shadow:
+    0 1px 1px   rgba(0, 0, 0, 0.12),
+    0 2px 2px   rgba(0, 0, 0, 0.12),
+    0 4px 4px   rgba(0, 0, 0, 0.12),
+    0 8px 8px   rgba(0, 0, 0, 0.12),
+    0 16px 16px rgba(0, 0, 0, 0.12);
+}
+
+/// Glass morphism effect
+@mixin glass-morphism($opacity: 0.25, $blur: 4px) {
+  background: rgba(255, 255, 255, $opacity);
+  backdrop-filter: blur($blur);
+  -webkit-backdrop-filter: blur($blur);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+/// Transition shorthand
+@mixin transition($properties: all, $duration: 0.3s, $easing: $ease-in-out) {
+  transition: $properties $duration $easing;
+}
+
+/// Define a CSS color variable + its RGB companion
+/// Usage: @include define-color('primary', #1976d2);
+@mixin define-color($name, $clr) {
+  --#{$name}:     #{$clr};
+  --#{$name}-rgb: #{color.red($clr)}, #{color.green($clr)}, #{color.blue($clr)};
+}
+
+/// Card base styles
+@mixin card-base {
+  background: $color-surface;
+  border-radius: $border-radius-lg;
+  border: 1px solid $color-border-light;
+  box-shadow: $shadow-sm;
+}
+
+/// Visually hidden (accessible)
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

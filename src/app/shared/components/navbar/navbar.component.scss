@@ -1,0 +1,258 @@
+@use '../../shared-variables' as *;
+
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  background: linear-gradient(135deg, var(--surface-color) 0%, var(--surface-color) 100%);
+}
+
+.navbar-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  width: 100%;
+  gap: 24px;
+
+  @media (max-width: 1024px) {
+    padding: 12px 16px;
+    gap: 16px;
+  }
+
+  @media (max-width: 768px) {
+    padding: 8px 12px;
+    gap: 12px;
+  }
+}
+
+.navbar-brand {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: var(--primary-color);
+    font-weight: 700;
+    font-size: 22px;
+    transition: all $transition-base;
+    padding: 8px 12px;
+    border-radius: $border-radius-lg;
+
+    &:hover {
+      background-color: rgba(var(--primary-color-rgb), 0.1);
+      transform: translateY(-2px);
+    }
+
+    .logo-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+      color: var(--primary-color);
+    }
+
+    .logo-text {
+      background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .logo {
+      font-size: 18px;
+
+      .logo-text {
+        display: none;
+      }
+    }
+  }
+}
+
+.navbar-search {
+  flex: 1;
+  min-width: 200px;
+  max-width: 400px;
+
+  .search-field {
+    width: 100%;
+
+    ::ng-deep {
+      .mdc-text-field {
+        height: 40px;
+      }
+
+      .mat-mdc-form-field-focus-overlay {
+        display: none;
+      }
+    }
+  }
+
+  @media (max-width: 1024px) {
+    max-width: 250px;
+  }
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+.navbar-menu {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border-radius: $border-radius-md;
+    transition: all $transition-base;
+    color: var(--text-color);
+    white-space: nowrap;
+
+    &:hover {
+      background-color: rgba(var(--primary-color-rgb), 0.1);
+      color: var(--primary-color);
+
+      mat-icon {
+        transform: scale(1.1);
+      }
+    }
+
+    mat-icon {
+      transition: transform $transition-base;
+    }
+
+    span {
+      @media (max-width: 768px) {
+        display: none;
+      }
+    }
+  }
+
+  .user-menu-btn {
+    position: relative;
+    padding: 4px 12px;
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--primary-color);
+    }
+
+    .menu-arrow {
+      transition: transform $transition-base;
+    }
+
+    &[aria-expanded='true'] {
+      .menu-arrow {
+        transform: rotate(180deg);
+      }
+    }
+  }
+
+  .theme-btn {
+    padding: 8px;
+    transition: all $transition-base;
+
+    &:hover {
+      background-color: rgba(var(--primary-color-rgb), 0.1);
+      color: var(--primary-color);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .nav-link span {
+      display: none;
+    }
+  }
+}
+
+// User Menu Styling
+::ng-deep {
+  .user-menu {
+    .mat-mdc-menu-content {
+      padding: 8px 0 !important;
+    }
+
+    .mat-mdc-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      height: 40px;
+      padding: 0 16px !important;
+
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+
+      span {
+        font-size: 14px;
+      }
+
+      &:hover {
+        background-color: rgba(var(--primary-color-rgb), 0.08);
+      }
+    }
+  }
+
+  .theme-menu {
+    .mat-mdc-menu-content {
+      padding: 8px 0 !important;
+    }
+
+    .theme-option {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      height: 40px;
+      padding: 0 16px !important;
+      position: relative;
+
+      .theme-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+
+      span {
+        font-size: 14px;
+      }
+
+      &.active {
+        background-color: rgba(var(--primary-color-rgb), 0.12);
+        font-weight: 600;
+
+        &::after {
+          content: '';
+          position: absolute;
+          right: 8px;
+          width: 4px;
+          height: 4px;
+          border-radius: 50%;
+          background-color: var(--primary-color);
+        }
+      }
+
+      &:hover {
+        background-color: rgba(var(--primary-color-rgb), 0.08);
+      }
+    }
+  }
+}
